@@ -11,6 +11,7 @@ pipeline {
         APP_DIR = "/home/ubuntu/app"
     }
 
+
     stages {
         stage('Docker Hub Login') {
             steps {
