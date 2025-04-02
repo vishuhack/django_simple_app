@@ -213,7 +213,7 @@ pipeline {
                 rm -rf ${APP_DIR}
                 git clone ${REPO_URL} ${APP_DIR}
                 cd ${APP_DIR}
-                docker build -t ${DOCKER_HUB_REPO}:previous .
+                docker build . -t ${DOCKER_HUB_REPO}:previous
                 docker push ${DOCKER_HUB_REPO}:previous || exit 1
                 docker stop \$(docker ps -q) || true
                 docker run -d -p 5000:5000 ${DOCKER_HUB_REPO}:previous
