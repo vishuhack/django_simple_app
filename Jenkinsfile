@@ -290,7 +290,7 @@ pipeline {
         }
 
         stage('Switch Traffic to Green') {
-            when { expression { env.DEPLOYMENT_COUNT.toInteger() >= 1 && currentBuild.result != 'FAILURE' } }
+            when { expression { env.DEPLOYMENT_COUNT.toInteger() >= 1 && (currentBuild.result == null || currentBuild.result != 'FAILURE') } }
             steps {
                 script {
                     sh """
