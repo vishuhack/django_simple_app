@@ -236,6 +236,7 @@ pipeline {
                         docker stop \$(docker ps -q) || true
                         docker run -d -p 5000:5000 ${DOCKER_HUB_REPO}:latest
                         """
+                        currentBuild.result = 'SUCCESS'
                     } catch (Exception e) {
                         echo "Green deployment failed! Keeping traffic on Blue."
                         currentBuild.result = 'FAILURE'
@@ -279,6 +280,7 @@ pipeline {
                                 docker stop \$(docker ps -q) || true
                                 docker run -d -p 5000:5000 ${DOCKER_HUB_REPO}:latest
                                 """
+                                currentBuild.result = 'SUCCESS'
                             } catch (Exception e) {
                                 echo "Green deployment failed! Rolling back..."
                                 currentBuild.result = 'FAILURE'
@@ -290,7 +292,7 @@ pipeline {
         }
 
         stage('Switch Traffic to Green') {
-            when { expression { env.DEPLOYMENT_COUNT.toInteger() >= 1 && (currentBuild.result == null || currentBuild.result != 'FAILURE') } }
+            when { expression { env.DEPLOYMENT_COUNT.toInteger() >= 1 && currentBuild.result != 'FAILURE' } }
             steps {
                 script {
                     sh """
