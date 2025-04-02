@@ -252,16 +252,16 @@ pipeline {
                     agent { label 'blue-server' }
                     steps {
                         script {
-                            try {
+                            // try {
                                 sh """
                                 docker tag ${DOCKER_HUB_REPO}:latest ${DOCKER_HUB_REPO}:previous
                                 docker push ${DOCKER_HUB_REPO}:previous || exit 1
                                 docker stop \$(docker ps -q) || true
                                 docker run -d -p 5000:5000 ${DOCKER_HUB_REPO}:previous
                                 """
-                            } catch (Exception e) {
-                                echo "Error while moving Green to Blue!"
-                            }
+                            // } catch (Exception e) {
+                            //     echo "Error while moving Green to Blue!"
+                            // }
                         }
                     }
                 }
@@ -270,7 +270,7 @@ pipeline {
                     agent { label 'green-server' }
                     steps {
                         script {
-                            try {
+                            // try {
                                 sh """
                                 rm -rf ${APP_DIR}
                                 git clone ${REPO_URL} ${APP_DIR}
@@ -281,10 +281,10 @@ pipeline {
                                 docker run -d -p 5000:5000 ${DOCKER_HUB_REPO}:latest
                                 """
                                 currentBuild.result = 'SUCCESS'
-                            } catch (Exception e) {
-                                echo "Green deployment failed! Rolling back..."
-                                currentBuild.result = 'FAILURE'
-                            }
+                            // } catch (Exception e) {
+                            //     echo "Green deployment failed! Rolling back..."
+                            //     currentBuild.result = 'FAILURE'
+                            // }
                         }
                     }
                 }
