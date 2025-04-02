@@ -5,11 +5,12 @@ pipeline {
         BLUE_IP = "54.221.135.197"
         GREEN_IP = "34.239.23.73"
         NGINX_IP = "34.204.247.221"
-        DEPLOYMENT_FILE = "/var/lib/jenkins/deployment_count"
+        DEPLOYMENT_FILE = "/var/lib/jenkins/workspace/django-simple-app/deployment_count.txt"
         REPO_URL = "https://github.com/vishuhack/django_simple_app.git"
         DOCKER_HUB_REPO = "deepalidevops1975/django_simple_app"
         APP_DIR = "/home/ubuntu/app"
     }
+
 
     stages {
         stage('Docker Hub Login') {
