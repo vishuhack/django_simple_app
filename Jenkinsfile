@@ -16,17 +16,10 @@ pipeline {
         stage('Check First-Time Deployment') {
             steps {
                 script {
-                    def activeEnvFile = "/etc/nginx/active_env"
-    
-                    if (fileExists(activeEnvFile)) {
-                        env.ACTIVE_ENV = sh(script: "cat ${activeEnvFile}", returnStdout: true).trim()
-                    }
-                
-                    if (!env.ACTIVE_ENV) {
-                        env.ACTIVE_ENV = "blue" // Default to blue if the file is empty or missing
-                    }
-                
-                    env.INACTIVE_ENV = env.ACTIVE_ENV == "blue" ? "green" : "blue"
+                    def activeEnvFile = '/etc/nginx/active_env'
+                    def activeEnv = fileExists(activeEnvFile) ? sh(script: "cat ${activeEnvFile}", returnStdout: true).trim() : null
+                    env.ACTIVE_ENV = activeEnv
+                    env.INACTIVE_ENV = (activeEnv == "blue") ? "green" : "blue"
                     echo "Active Environment: ${env.ACTIVE_ENV}"
                     echo "Inactive Environment: ${env.INACTIVE_ENV}"
                 }
