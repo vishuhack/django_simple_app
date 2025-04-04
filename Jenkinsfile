@@ -3,7 +3,7 @@ pipeline {
     environment {
         BLUE_IP = "54.221.135.197"
         GREEN_IP = "34.239.23.73"
-        NGINX_IP = "34.204.247.221"
+        NGINX_SERVER = "34.204.247.221"  // Since Nginx is on the same machine as Jenkins
         REPO_URL = "https://github.com/vishuhack/django_simple_app.git"
         DOCKER_HUB_REPO = "deepalidevops1975/django_simple_app"
         APP_DIR = "/home/ubuntu/app"
@@ -16,14 +16,14 @@ pipeline {
         stage('Check First-Time Deployment') {
             steps {
                 script {
-                    def checkEnvExists = sh(script: "ssh ubuntu@${NGINX_IP} '[ -f /etc/nginx/active_env ] && echo exists || echo missing'", returnStdout: true).trim()
+                    def checkEnvExists = sh(script: "[ -f /etc/nginx/active_env ] && echo exists || echo missing", returnStdout: true).trim()
                     if (checkEnvExists == "missing") {
                         echo "First-time deployment detected!"
                         FIRST_DEPLOYMENT = true
                         ACTIVE_ENV = "blue"
                         INACTIVE_ENV = "green"
                     } else {
-                        ACTIVE_ENV = sh(script: "ssh ubuntu@${NGINX_IP} 'cat /etc/nginx/active_env'", returnStdout: true).trim()
+                        ACTIVE_ENV = sh(script: "cat /etc/nginx/active_env", returnStdout: true).trim()
                         INACTIVE_ENV = (ACTIVE_ENV == 'blue') ? 'green' : 'blue'
                     }
                     echo "Active Environment: ${ACTIVE_ENV}"
@@ -71,9 +71,9 @@ pipeline {
                 script {
                     echo "Setting up Nginx for first deployment..."
                     sh """
-                    ssh ubuntu@${NGINX_IP} "echo '${ACTIVE_ENV}' | sudo tee /etc/nginx/active_env"
-                    ssh ubuntu@${NGINX_IP} "sudo sed -i 's/server PLACEHOLDER_IP;/server ${BLUE_IP};/' /etc/nginx/sites-available/default"
-                    ssh ubuntu@${NGINX_IP} "sudo systemctl reload nginx"
+                    echo '${ACTIVE_ENV}' | sudo tee /etc/nginx/active_env
+                    sudo sed -i 's/server PLACEHOLDER_IP;/server ${BLUE_IP};/' /etc/nginx/sites-available/default
+                    sudo systemctl reload nginx
                     """
                 }
             }
@@ -85,9 +85,9 @@ pipeline {
                 script {
                     def targetIp = (INACTIVE_ENV == "blue") ? BLUE_IP : GREEN_IP
                     sh """
-                    ssh ubuntu@${NGINX_IP} "sudo sed -i 's/server .*/server ${targetIp};/' /etc/nginx/sites-available/default"
-                    ssh ubuntu@${NGINX_IP} "echo '${INACTIVE_ENV}' | sudo tee /etc/nginx/active_env"
-                    ssh ubuntu@${NGINX_IP} "sudo systemctl reload nginx"
+                    sudo sed -i 's/server ${ACTIVE_ENV}_IP;/server ${targetIp};/' /etc/nginx/sites-available/default
+                    echo '${INACTIVE_ENV}' | sudo tee /etc/nginx/active_env
+                    sudo systemctl reload nginx
                     """
                 }
             }
