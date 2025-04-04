@@ -16,24 +16,19 @@ pipeline {
         stage('Check First-Time Deployment') {
             steps {
                 script {
-                    def checkEnvExists = sh(script: "[ -f /etc/nginx/active_env ] && echo exists || echo missing", returnStdout: true).trim()
-                    if (checkEnvExists == "missing") {
-                        echo "First-time deployment detected!"
-                        env.FIRST_DEPLOYMENT = "true"
-                        env.ACTIVE_ENV = "blue"
-                        env.INACTIVE_ENV = "green"
-                        sh "echo '${env.ACTIVE_ENV}' | sudo tee /etc/nginx/active_env > /dev/null"
-                    } else {
-                        env.ACTIVE_ENV = sh(script: "cat /etc/nginx/active_env", returnStdout: true).trim()
-                        env.INACTIVE_ENV = (env.ACTIVE_ENV == 'blue') ? 'green' : 'blue'
+                    def activeEnvFile = "/etc/nginx/active_env"
+    
+                    if (fileExists(activeEnvFile)) {
+                        env.ACTIVE_ENV = sh(script: "cat ${activeEnvFile}", returnStdout: true).trim()
                     }
+                
                     if (!env.ACTIVE_ENV) {
-                        env.ACTIVE_ENV = "blue"
-                        env.INACTIVE_ENV = "green"
+                        env.ACTIVE_ENV = "blue" // Default to blue if the file is empty or missing
                     }
+                
+                    env.INACTIVE_ENV = env.ACTIVE_ENV == "blue" ? "green" : "blue"
                     echo "Active Environment: ${env.ACTIVE_ENV}"
                     echo "Inactive Environment: ${env.INACTIVE_ENV}"
-                    echo "First Deployment: ${env.FIRST_DEPLOYMENT}"
                 }
             }
         }
