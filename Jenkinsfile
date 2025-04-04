@@ -71,7 +71,7 @@ pipeline {
                 script {
                     echo "Setting up Nginx for first deployment..."
                     sh """
-                    echo '${ACTIVE_ENV}' | sudo tee /etc/nginx/active_env
+                    echo '${ACTIVE_ENV}' | sudo tee /etc/nginx/active_env > /dev/null
                     sudo sed -i 's/server PLACEHOLDER_IP;/server ${BLUE_IP};/' /etc/nginx/sites-available/default
                     sudo systemctl reload nginx
                     """
