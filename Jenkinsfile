@@ -22,9 +22,14 @@ pipeline {
                         env.FIRST_DEPLOYMENT = "true"
                         env.ACTIVE_ENV = "blue"
                         env.INACTIVE_ENV = "green"
+                        sh "echo '${env.ACTIVE_ENV}' | sudo tee /etc/nginx/active_env > /dev/null"
                     } else {
                         env.ACTIVE_ENV = sh(script: "cat /etc/nginx/active_env", returnStdout: true).trim()
                         env.INACTIVE_ENV = (env.ACTIVE_ENV == 'blue') ? 'green' : 'blue'
+                    }
+                    if (!env.ACTIVE_ENV) {
+                        env.ACTIVE_ENV = "blue"
+                        env.INACTIVE_ENV = "green"
                     }
                     echo "Active Environment: ${env.ACTIVE_ENV}"
                     echo "Inactive Environment: ${env.INACTIVE_ENV}"
@@ -44,7 +49,7 @@ pipeline {
         }
 
         stage('Deploy to Target Environment') {
-            agent { label "${env.INACTIVE_ENV}-server" }
+            agent { label env.INACTIVE_ENV ? "${env.INACTIVE_ENV}-server" : "green-server" }
             steps {
                 script {
                     try {
