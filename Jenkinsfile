@@ -90,9 +90,12 @@ pipeline {
             steps {
                 script {
                     def targetIp = (env.INACTIVE_ENV == "blue") ? env.BLUE_IP : env.GREEN_IP
+                    def currentIp = (env.ACTIVE_ENV == "blue") ? env.BLUE_IP : env.GREEN_IP
+                    
                     echo "🔄 Switching traffic to ${env.INACTIVE_ENV} (${targetIp})"
+
                     sh """
-                    sudo sed -i 's/server ${env.ACTIVE_ENV == "blue" ? BLUE_IP : GREEN_IP};/server ${targetIp};/' /etc/nginx/sites-available/default
+                    sudo sed -i 's/server ${currentIp}:5000;/server ${targetIp}:5000;/' /etc/nginx/sites-available/default
                     echo '${env.INACTIVE_ENV}' | sudo tee /etc/nginx/active_env
                     sudo systemctl reload nginx
                     """
