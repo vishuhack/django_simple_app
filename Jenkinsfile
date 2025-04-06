@@ -237,10 +237,11 @@ pipeline {
                     echo "🔄 Switching traffic to ${env.INACTIVE_ENV} (${targetIp})"
 
                     sh """
-                    sudo sed -i 's/server ${currentIp}:5000;/server ${targetIp}:5000;/' /etc/nginx/sites-available/default
+                    sudo sed -i "s/server ${currentIp}:5000;/server ${targetIp}:5000;/" /etc/nginx/sites-available/default
                     echo '${env.INACTIVE_ENV}' | sudo tee /etc/nginx/active_env
                     sudo systemctl reload nginx
                     """
+
                 }
             }
         }
