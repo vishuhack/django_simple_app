@@ -343,7 +343,7 @@ pipeline {
                     } catch (Exception e) {
                         echo "❌ Deployment failed on ${env.INACTIVE_ENV}. Triggering rollback..."
                         currentBuild.result = 'FAILURE'
-                        throw e
+                        return
                     }
                 }
             }
