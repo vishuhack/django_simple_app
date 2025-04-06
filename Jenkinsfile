@@ -137,7 +137,7 @@ pipeline {
         REPO_URL = "https://github.com/vishuhack/django_simple_app.git"
         DOCKER_HUB_REPO = "deepalidevops1975/django_simple_app"
         APP_DIR = "/home/ubuntu/app"
-        SSH_KEY = "/home/ubuntu/deepali-linux-key.pem"
+        SSH_KEY = "/var/lib/jenkins/.ssh/deepali-linux-key.pem"
     }
 
     stages {
