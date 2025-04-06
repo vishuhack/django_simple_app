@@ -366,7 +366,12 @@ pipeline {
         }
 
         stage('Switch Traffic to New Version') {
-            when { expression { env.FIRST_DEPLOYMENT == "false" } }
+            when { 
+                allOf {
+                    expression { env.FIRST_DEPLOYMENT == "false" }
+                    expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+                }
+            }
             steps {
                 script {
                     def targetIp = (env.INACTIVE_ENV == "blue") ? env.BLUE_IP : env.GREEN_IP
