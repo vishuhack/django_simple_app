@@ -3,7 +3,7 @@ pipeline {
     environment {
         BLUE_IP = "54.221.135.197"
         GREEN_IP = "34.239.23.73"
-        NGINX_SERVER = "34.204.247.221"
+        NGINX_SERVER = "54.204.97.10"
         REPO_URL = "https://github.com/vishuhack/django_simple_app.git"
         DOCKER_HUB_REPO = "deepalidevops1975/django_simple_app"
         APP_DIR = "/home/ubuntu/app"
