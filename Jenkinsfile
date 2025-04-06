@@ -59,7 +59,7 @@ pipeline {
                         } catch (e) {
                             echo "❌ Deployment to ${env.INACTIVE_ENV}-server failed!"
                             currentBuild.result = 'FAILURE'
-                            throw e
+                            return
                         }
                     }
                 }
