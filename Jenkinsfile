@@ -394,6 +394,76 @@ pipeline {
                 echo "⚠️ Rollback activated. Keeping traffic on ${env.ACTIVE_ENV} environment."
             }
         }
+
+        stage('Send Deployment Email') 
+        {
+            steps 
+            {
+                script 
+                {
+                    def subject = ''
+                    def body = ''
+                    def recipient = 'vishveshpaturkar2006@gmail.com'
+                    def buildUrl = "${env.BUILD_URL}"  // Jenkins provides this env var automatically
+
+                    if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
+                        def deployedEnv = env.INACTIVE_ENV
+                        def deployedIp = (deployedEnv == "blue") ? env.BLUE_IP : env.GREEN_IP
+
+                        subject = "✅ Deployment Success on ${deployedEnv.toUpperCase()} Server"
+                        body = """
+                        <html>
+                        <body>
+                            <p>Hello,</p>
+
+                            <p>✅ Your Django app has been successfully deployed on the <b>${deployedEnv.toUpperCase()}</b> server.</p>
+
+                            <p>🌐 Access it at: <a href="http://${deployedIp}:5000">http://${deployedIp}:5000</a></p>
+
+                            <p>🔍 <a href="${buildUrl}">View Console Output</a></p>
+
+                            <br>
+                            <p>Regards,<br>
+                            Jenkins Blue-Green Pipeline</p>
+                        </body>
+                        </html>
+                        """
+                    } else {
+                        def failedEnv = env.INACTIVE_ENV
+                        def stableEnv = env.ACTIVE_ENV
+                        def stableIp = (stableEnv == "blue") ? env.BLUE_IP : env.GREEN_IP
+
+                        subject = "❌ Deployment Failed on ${failedEnv.toUpperCase()} Server"
+                        body = """
+                        <html>
+                        <body>
+                            <p>Hello,</p>
+
+                            <p>❌ Deployment failed on the <b>${failedEnv.toUpperCase()}</b> server.</p>
+                            <p>✅ The previous stable version is still running on the <b>${stableEnv.toUpperCase()}</b> server.</p>
+
+                            <p>🌐 Access it at: <a href="http://${stableIp}:5000">http://${stableIp}:5000</a></p>
+
+                            <p>📄 Please <a href="${buildUrl}">check the Jenkins Console Output</a> for detailed logs.</p>
+
+                            <br>
+                            <p>Regards,<br>
+                            Jenkins Blue-Green Pipeline</p>
+                        </body>
+                        </html>
+                        """
+                    }
+                        emailext(
+                            subject: subject,
+                            body: body,
+                            to: recipient,
+                            mimeType: 'text/html'
+                        )
+                }
+            }
+        }
+
+        
     }
 
     post {
