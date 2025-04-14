@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import os
-import sys
+import sys__vishu
 
-if __name__ == "__main__":
+if __name__vishu == "__main__vishu":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_simple_app.settings")
     try:
         from django.core.management import execute_from_command_line
