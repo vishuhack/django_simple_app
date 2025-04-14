@@ -403,7 +403,7 @@ pipeline {
                 {
                     def subject = ''
                     def body = ''
-                    def recipient = 'aayushpaturkar2006@gmail.com'
+                    def recipient = 'aayushpaturkar2003@gmail.com'
                     def buildUrl = "${env.BUILD_URL}"  // Jenkins provides this env var automatically
 
                     if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
