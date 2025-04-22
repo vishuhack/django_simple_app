@@ -62,7 +62,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ubuntu@${targetIp} '
                             set -e
                             echo "🧹 Cleaning old Docker images..."
-                            docker stop \$(docker ps -q) || true
+                            dockercompose stop \$(docker ps -q) || true
                             docker rm \$(docker ps -a -q) || true
                             docker rmi -f ${DOCKER_HUB_REPO}:${env.INACTIVE_ENV} || true
                             docker image prune -af || true
